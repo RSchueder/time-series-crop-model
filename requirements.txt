@@ -1,0 +1,17 @@
+dask[dataframe]
+distributed
+geojson
+geopandas
+matplotlib
+mypy
+numpy
+pandas
+python-dotenv
+rasterio
+rioxarray
+scikit-learn
+seaborn
+shapely
+universal_pathlib
+xarray
+zarr

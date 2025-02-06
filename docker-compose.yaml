@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+    devcontainer:
+        container_name: devcontainer-${USER}
+        image: devcontainer-${USER}
+        platform: linux/arm64
+        build:
+            context: .
+            target: base
+        volumes:
+            - ./:/code
+        command: /bin/sh -c "while sleep 1000; do :; done"
