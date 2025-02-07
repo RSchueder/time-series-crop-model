@@ -1,6 +1,9 @@
 # time-series-crop-model
 A demonstration project looking at crop type segmentation using time series.
 
+# Goal
+The goals is to implement an active learning approach to systematically detect underperforming crops from the model predictions and strategically incorporate them back into the training pipeline. This process aims to refine the model’s accuracy by iteratively improving its ability to differentiate between crops, particularly in AOIs where it currently struggles due to a lack of representative training data.
+
 # Getting started
 
 ## Dev environment
