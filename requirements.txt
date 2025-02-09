@@ -15,6 +15,7 @@ rioxarray
 scikit-learn
 seaborn
 shapely
+tqdm
 universal_pathlib
 xarray
 zarr

@@ -1,6 +1,7 @@
 affine==2.4.0
 asttokens==3.0.0
 attrs==25.1.0
+black==25.1.0
 certifi==2025.1.31
 click==8.1.8
 click-plugins==1.1.1
@@ -26,6 +27,7 @@ geopandas==1.0.1
 importlib_metadata==8.6.1
 ipykernel==6.29.5
 ipython==8.32.0
+isort==6.0.0
 jedi==0.19.2
 Jinja2==3.1.5
 joblib==1.4.2
@@ -48,6 +50,7 @@ packaging==24.2
 pandas==2.2.3
 parso==0.8.4
 partd==1.4.2
+pathspec==0.12.1
 pexpect==4.9.0
 pillow==11.1.0
 platformdirs==4.3.6

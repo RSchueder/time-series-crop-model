@@ -172,3 +172,4 @@ cython_debug/
 
 # Project Files
 data/*
+result_per_class.csv

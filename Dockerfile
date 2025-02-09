@@ -24,5 +24,7 @@ COPY requirements.txt /code
 COPY constraints.txt /code
 RUN pip install -U pip && pip install -r requirements.txt -c constraints.txt \
     && pip install torch==${ARM_TORCH_VERSION} --no-cache-dir -c constraints.txt \
-    && pip install GDAL==3.6.2 --no-cache-dir -c constraints.txt
+    && pip install GDAL==3.6.2 --no-cache-dir -c constraints.txt \
     && python -m pip install ipykernel -U
+
+RUN pip install jupyterlab

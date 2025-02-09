@@ -10,7 +10,7 @@
         "/usr/local/bin/python"
     ],
     "isort.interpreter": [
-        "usr/local/bin/python"
+        "/usr/local/bin/python"
     ],
     "[python]": {
         "diffEditor.ignoreTrimWhitespace": false,

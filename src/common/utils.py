@@ -1,17 +1,16 @@
-from typing import Tuple
-from typing import Union
-from shapely.geometry import Polygon
-import numpy as np
+from typing import Tuple, Union
 
+import numpy as np
+from shapely.geometry import Polygon
 
 Bounds = Tuple[float, float, float, float]
 
 
 def get_utm_zone_epsg(aoi: Union[Bounds, Polygon]):
-    if isinstance(aoi, Polygon):
-        minx, miny, maxx, maxy = aoi.bounds
-    else:
+    if isinstance(aoi, Tuple):
         minx, miny, maxx, maxy = aoi
+    else:
+        minx, miny, maxx, maxy = aoi.bounds
 
     lon = np.mean([minx, maxx])
     lat = np.mean([miny, maxy])
