@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import rasterio
+import seaborn as sns
 from matplotlib.colors import BoundaryNorm, ListedColormap
 from rasterio import features
 from rasterio.mask import mask
@@ -14,7 +15,7 @@ from rasterio.vrt import WarpedVRT
 from rasterio.warp import Resampling
 from scipy.stats import mode
 from shapely.geometry import Polygon, box
-from sklearn.metrics import f1_score, precision_recall_fscore_support
+from sklearn.metrics import confusion_matrix, f1_score, precision_recall_fscore_support
 from tqdm import tqdm
 
 from src.common.utils import get_utm_zone_epsg
@@ -49,7 +50,7 @@ def join_predictions_wih_labels(
         lambda x: TWO_WAY_LABELS_DICT.get(x, MISSING_VALUE)
     )
     valid_labels = ground_truth[ground_truth["label"] != MISSING_VALUE]
-    discarded_labels = ground_truth[ground_truth["label"] == MISSING_VALUE]
+    # discarded_labels = ground_truth[ground_truth["label"] == MISSING_VALUE]
 
     valid_labels.loc[:, ["label_index"]] = valid_labels["label"].apply(
         lambda x: LABELS_INDEX.index(x)
@@ -84,7 +85,7 @@ def join_predictions_wih_labels(
             with WarpedVRT(src, **vrt_options) as vrt:
                 reprojected_predictions = vrt.read(pred_index_band)
                 reprojected_confidence = vrt.read(confidence_index_band)
-    
+
     with rasterio.open(prediction_path) as src:
         predictions = src.read(3)
         confidence = src.read(4)
@@ -97,7 +98,7 @@ def join_predictions_wih_labels(
         rasterized_labels = rasterio.features.rasterize(
             shapes=shapes, out_shape=src.shape, transform=src.transform, nodata=255
         )
-    """
+
         shapes = [
             (valid_labels["geometry"].loc[idx], valid_labels["index"].loc[idx])
             for idx in valid_labels.index
@@ -115,10 +116,9 @@ def join_predictions_wih_labels(
         }
     )
     field_df_mean = pixel_df.groupby("field_index").mean()
-    field_df_mode = pixel_df.groupby("field_index").mean()
-    field_df_mean.to_csv('/code/field_df_mean.csv')
-    field_df_mode.to_csv('/code/field_df_mode.csv')
-    """
+    field_df_mode = pixel_df.groupby("field_index").agg(pd.Series.mode)
+    field_df_mean.to_csv("/code/field_df_mean.csv")
+    field_df_mode.to_csv("/code/field_df_mode.csv")
 
     confidence_per_class = [
         np.mean(confidence[predictions == idx]) for idx in range(len(LABELS_INDEX))
@@ -156,6 +156,26 @@ def join_predictions_wih_labels(
     df = df.sort_values("f1-score", ascending=False)
     df.to_csv("/code/result_per_class.csv")
 
+    cf = confusion_matrix(
+        rasterized_labels.flatten(),
+        predictions.flatten(),
+        labels=[ii for ii in range(len(LABELS_INDEX))],
+        normalize="true",
+    )
+    plt.figure(figsize=(20, 20))
+
+    plot = sns.heatmap(
+        cf,
+        annot=True,
+        cmap="Blues",
+        fmt=".2f",
+        cbar=True,
+        xticklabels=np.arange(len(LABELS_INDEX)),
+        yticklabels=np.arange(len(LABELS_INDEX)),
+    )
+    plt.xlabel("Pred")
+    plt.ylabel("True")
+    plt.savefig("/code/cf.png")
 
     """
     # this takes longer than 5 minutes...
