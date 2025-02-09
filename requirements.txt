@@ -1,8 +1,10 @@
+black
 click
 dask[dataframe]
 distributed
 geojson
 geopandas
+isort
 matplotlib
 mypy
 numpy

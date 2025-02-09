@@ -1,0 +1,22 @@
+{
+    "python.defaultInterpreterPath": "/usr/local/bin/python",
+    "files.autoSave": "afterDelay",
+    "python.analysis.typeCheckingMode": "basic",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "editor.formatOnSave": true,
+    "black-formatter.interpreter": [
+        "/usr/local/bin/python"
+    ],
+    "isort.interpreter": [
+        "usr/local/bin/python"
+    ],
+    "[python]": {
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.defaultColorDecorators": "never",
+        "editor.formatOnType": true,
+        "editor.wordBasedSuggestions": "off",
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
+}

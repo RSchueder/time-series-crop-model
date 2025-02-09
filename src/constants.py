@@ -32,3 +32,17 @@ LABELS_DICT = {
     "Trees": ["trees", "orchard", "orchards", "bananas"],
     "Vineyard": ["vineyard"],
 }
+
+MISSING_VALUE = "MISSING_VALUE"
+
+LABELS_INDEX = list(LABELS_DICT.keys())
+
+TWO_WAY_LABELS_DICT = {}
+
+for key, values in LABELS_DICT.items():
+    for value in values:
+        TWO_WAY_LABELS_DICT[key] = value
+        TWO_WAY_LABELS_DICT[value] = key
+
+CROP_TYPE_PREDICTION_INDEX_BAND = 3
+CROP_TYPE_PREDICTION_CONFIDENCE_BAND = 4
