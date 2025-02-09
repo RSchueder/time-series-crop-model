@@ -1,7 +1,12 @@
+import logging
 from typing import Tuple, Union
 
 import numpy as np
 from shapely.geometry import Polygon
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
+
 
 Bounds = Tuple[float, float, float, float]
 

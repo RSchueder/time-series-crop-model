@@ -11,8 +11,8 @@ from src.constants import (
     CROP_TYPE_PREDICTION_INDEX_BAND,
 )
 from src.evaluation import join_predictions_wih_labels
+from src.common.utils import log
 
-log = logging.getLogger(__name__)
 
 
 @click.group()
@@ -60,23 +60,32 @@ def cli():
     required=True,
     help="The number of low confidence fields that should be returned",
 )
+@click.option(
+    "--in-utm",
+    "-u",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Do all work in UTM or not.",
+)
 def determine_poor_performance(
     prediction_path: Path,
     label_path: Path,
     prediction_channel: Optional[int],
     confidence_channel: Optional[int],
     top_n: Optional[int],
+    in_utm: Optional[bool],
 ) -> None:
     st = datetime.datetime.now()
 
-    print("Running join_predictions_wih_labels")
+    log.info("Running join_predictions_wih_labels")
     join_predictions_wih_labels(
-        prediction_path, label_path, prediction_channel, confidence_channel
+        prediction_path, label_path, prediction_channel, confidence_channel, in_utm
     )
-    print("Finished join_predictions_wih_labels")
+    log.info("Finished join_predictions_wih_labels")
     et = datetime.datetime.now()
 
-    print(f"Finished in {(et - st).seconds} seconds.")
+    log.info(f"Finished in {(et - st).seconds} seconds.")
 
 
 if __name__ == "__main__":

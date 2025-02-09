@@ -3,4 +3,4 @@ python src/cli.py determine-poor-performance \
 -l /code/data/u0c_gt_filtered_2022.gpkg \
 -pc 3 \
 -cc 4 \
--n 10
+-n 10 \

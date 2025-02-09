@@ -9,6 +9,7 @@ matplotlib
 mypy
 numpy
 pandas
+pytest
 python-dotenv
 rasterio
 rioxarray
