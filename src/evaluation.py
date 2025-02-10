@@ -22,10 +22,7 @@ from src.constants import (
     TWO_WAY_LABELS_DICT,
 )
 from src.extract import extract_labels_and_indices
-from src.metrics import (
-    calculate_crop_performance,
-    calculate_misclassifications_per_field,
-)
+from src.metrics import calculate_crop_performance, calculate_statistics_per_field
 
 
 def join_prediction_with_labels(
@@ -85,7 +82,7 @@ def evaluate(
     in_utm=False,
 ):
     """
-    Joins model predictions with ground truth labels and generates performance analysis outputs
+    Joins model predictions with ground truth labels and generates performance analysis outputs.
 
     Args:
         prediction_path (Path): Path to the raster file containing model predictions
@@ -169,23 +166,20 @@ def evaluate(
     log.info("Doing final join...")
     main_result_df = (
         valid_labels.set_index("field_index")
-        .join(
-            field_df_mode[["label_value", "predictions"]]
-        )
+        .join(field_df_mode[["label_value", "predictions"]])
         .join(field_df_mean[["confidence"]])
         .join(
-            field_df_count[[ "label_value"]]
-            .rename(columns={"label_value": "n_pixels"})
+            field_df_count[["label_value"]].rename(columns={"label_value": "n_pixels"})
         )
     )
     main_result_df.to_csv(output_path / f"main_df{file_suffix}.csv")
 
     # misclassifications on field basis
     log.info("Determining misclasifications...")
-    calculate_misclassifications_per_field(main_result_df, output_path, file_suffix)
+    calculate_statistics_per_field(main_result_df, output_path, file_suffix)
+
     # performance on crop basis
     log.info("Determining performance per crop...")
-
     calculate_crop_performance(
         predictions, confidence, rasterized_labels, output_path, file_suffix
     )

@@ -76,7 +76,7 @@ def calculate_crop_performance(
     plt.savefig(output_path / f"pixelwise_confusion_matrix{file_suffix}.png")
 
 
-def calculate_misclassifications_per_field(
+def calculate_statistics_per_field(
     main_result_df: pd.DataFrame, output_path: Path, file_suffix: str
 ):
     main_result_df[
@@ -175,3 +175,29 @@ def calculate_misclassifications_per_field(
     plt.ylabel("True")
     plt.tight_layout()
     plt.savefig(output_path / f"fieldwise_confusion_matrix_norm_pred{file_suffix}.png")
+
+    precision, recall, _, _ = precision_recall_fscore_support(
+        main_result_df["label_index"],
+        main_result_df["predictions_clean"],
+        labels=[ii for ii in range(len(LABELS_INDEX))],
+        average=None,
+        zero_division=np.nan,
+    )
+    f1 = f1_score(
+        main_result_df["label_index"],
+        main_result_df["predictions_clean"],
+        labels=[ii for ii in range(len(LABELS_INDEX))],
+        average=None,
+        zero_division=np.nan,
+    )
+
+    metrics_df = pd.DataFrame(
+        {"precision": precision, "recall": recall, "f1-score": f1}
+    )
+    metrics_df.index.name = "label_index"
+    metrics_df = field_count_by_label_crop.join(metrics_df)
+
+    metrics_df["label_index"] = metrics_df.index
+    metrics_df["label"] = metrics_df["label_index"].apply(lambda x: LABELS_INDEX[x])
+
+    metrics_df.to_csv(output_path / f"fieldwise_result_per_class{file_suffix}.csv")

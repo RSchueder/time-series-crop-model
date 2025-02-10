@@ -34,7 +34,6 @@ python src/cli.py determine-poor-performance \
 -pc 3 \
 -cc 4 \
 -n 10 \
--u
 ```
 
 # Reported Analysis

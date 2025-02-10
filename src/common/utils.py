@@ -11,6 +11,13 @@ log = logging.getLogger(__name__)
 Bounds = Tuple[float, float, float, float]
 
 
+def map_val_to_int(p):
+    try:
+        return int(p)
+    except (ValueError, TypeError):
+        return -1
+
+
 def get_utm_zone_epsg(aoi: Union[Bounds, Polygon]):
     if isinstance(aoi, Tuple):
         minx, miny, maxx, maxy = aoi
@@ -29,10 +36,3 @@ def get_utm_zone_epsg(aoi: Union[Bounds, Polygon]):
         epsg_code = "327" + utm_band
 
     return np.int64(epsg_code)
-
-
-def map_val_to_int(p):
-    try:
-        return int(p)
-    except (ValueError, TypeError):
-        return -1
