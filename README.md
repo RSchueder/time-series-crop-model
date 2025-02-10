@@ -25,16 +25,26 @@ docker-compose up -d devcontainer
 Then use `Devcontainers: Attach to Running Container` command and attach to the `devcontainer-${USER}` container running on your machine.
 
 ## Running
+
+The entrypoint for this program is `src/cli.py`. For all available options you can run:
+
+```
+python src/cli.py --help
+```
+
 Example:
 
 ```
 python src/cli.py determine-poor-performance \
 -p /code/data/ml_2021-08-01_2022-12-31_u0c.tif \
 -l /code/data/u0c_gt_filtered_2022.gpkg \
+-o /code/output/ \
 -pc 3 \
 -cc 4 \
--n 10 \
+-n 10
 ```
+
+For the data files used in this repository, please see [this link](https://github.com/regrowag/regrow-mle-hiring/tree/main?tab=readme-ov-file#inputs).
 
 # Reported Analysis
 We have determined the following distribution of field-level misclassifications by crop type:
