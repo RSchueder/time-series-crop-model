@@ -29,3 +29,10 @@ def get_utm_zone_epsg(aoi: Union[Bounds, Polygon]):
         epsg_code = "327" + utm_band
 
     return np.int64(epsg_code)
+
+
+def map_val_to_int(p):
+    try:
+        return int(p)
+    except (ValueError, TypeError):
+        return -1

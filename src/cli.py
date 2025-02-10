@@ -6,22 +6,15 @@ from typing import Optional
 
 import click
 
+from src.common.utils import log
 from src.constants import (
     CROP_TYPE_PREDICTION_CONFIDENCE_BAND,
     CROP_TYPE_PREDICTION_INDEX_BAND,
 )
-from src.evaluation import join_predictions_wih_labels
-from src.common.utils import log
+from src.evaluation import evaluate
 
 
-
-@click.group()
-def cli():
-    """CLI tool for performance analysis."""
-    pass
-
-
-@cli.command("determine-poor-performance")
+@click.command()
 @click.option(
     "--prediction-path",
     "-p",
@@ -35,6 +28,13 @@ def cli():
     type=Path,
     required=True,
     help="path to vector annotations of crop type labels",
+)
+@click.option(
+    "--output-path",
+    "-o",
+    type=Path,
+    required=True,
+    help="path to produce outputs at",
 )
 @click.option(
     "--prediction-channel",
@@ -68,25 +68,30 @@ def cli():
     default=False,
     help="Do all work in UTM or not.",
 )
-def determine_poor_performance(
+def evaluate_performance(
     prediction_path: Path,
     label_path: Path,
-    prediction_channel: Optional[int],
-    confidence_channel: Optional[int],
-    top_n: Optional[int],
-    in_utm: Optional[bool],
+    output_path: Path,
+    prediction_channel: int = CROP_TYPE_PREDICTION_INDEX_BAND,
+    confidence_channel: int = CROP_TYPE_PREDICTION_CONFIDENCE_BAND,
+    top_n: int = 10,
+    in_utm: bool = False,
 ) -> None:
     st = datetime.datetime.now()
 
-    log.info("Running join_predictions_wih_labels")
-    join_predictions_wih_labels(
-        prediction_path, label_path, prediction_channel, confidence_channel, in_utm
+    log.info("Running evaluation...")
+    evaluate(
+        prediction_path,
+        label_path,
+        output_path,
+        prediction_channel,
+        confidence_channel,
+        in_utm,
     )
-    log.info("Finished join_predictions_wih_labels")
     et = datetime.datetime.now()
 
-    log.info(f"Finished in {(et - st).seconds} seconds.")
+    log.info(f"Finished evaluation in {(et - st).seconds} seconds.")
 
 
 if __name__ == "__main__":
-    cli()
+    evaluate_performance()

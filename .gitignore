@@ -172,13 +172,3 @@ cython_debug/
 
 # Project Files
 data/*
-result_per_class.csv
-*.png
-field_df_mean.csv
-field_df_mode.csv
-field_df_mean_utm.csv
-field_df_mode_utm.csv
-field_df_count.csv
-field_df_count_utm.csv
-invalid_fields.csv
-main_df.csv

@@ -37,8 +37,25 @@ python src/cli.py determine-poor-performance \
 -u
 ```
 
-# Next Steps
-W.I.P.
+# Reported Analysis
+We have determined the following distribution of field-level misclassifications by crop type:
+
+![field-level misclassifications by crop type](output/field_level_misclassifications.png)
+
+The cross-class confusion matrix on a field basis normalized by the true labels is as follows
+![crop type confusion matrix by field, norm true](output/fieldwise_confusion_matrix_norm_true.png)
+
+The cross-class confusion matrix on a field basis normalized by the predictions is as follows
+![crop type confusion matrix by field, norm pred](output/fieldwise_confusion_matrix_norm_pred.png)
+
+The cross-class confusion matrix on a pixel basis is as follows
+![crop type confusion matrix by pixel](output/pixelwise_confusion_matrix.png)
+
+## Observations
+We see that in absolute terms, the most commonly incorrectly classified field-level crop type was Fallow, which was incorrectly classified across more than 5000 fields. 
+However, it was also the 4th most abundant label in the evaluation set.
+
+Certain classes such as spring rye, spring wheat, and millet were completely missed by the model, but were also not very abundant in the evaluation set.
 
 # TODO
 * tests run but dont seem to do anything
