@@ -1,0 +1,11 @@
+label_index,label,field_count,f1-score
+30,Trees,910,0.0
+10,Spring Rye,17,0.0
+9,Winter Rye,193,0.0
+26,Beans,336,0.0
+29,Turnips,11,0.0
+13,Millet,9,0.0
+11,Spring Wheat,298,0.006557377049180328
+24,Soybeans,33,0.06547619047619048
+31,Vineyard,34,0.1702127659574468
+14,Sorghum,105,0.17105263157894737

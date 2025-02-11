@@ -86,6 +86,7 @@ def evaluate_performance(
         output_path,
         prediction_channel,
         confidence_channel,
+        top_n,
         in_utm,
     )
     et = datetime.datetime.now()
