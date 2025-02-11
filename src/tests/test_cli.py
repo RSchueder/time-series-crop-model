@@ -12,7 +12,6 @@ OUTPUT_PATH = "/code/output/"
 
 @pytest.mark.functional
 def test_cli():
-    """
     runner = CliRunner()
     result = runner.invoke(
         evaluate_performance,
@@ -23,9 +22,9 @@ def test_cli():
             "/code/data/u0c_gt_filtered_2022.gpkg",
             "-o",
             OUTPUT_PATH,
-            "-pc",
+            "-pb",
             "3",
-            "-cc",
+            "-cb",
             "4",
             "-n",
             "10",
@@ -33,6 +32,6 @@ def test_cli():
         catch_exceptions=False,
     )
     assert result.exit_code == 0
-    """
+    
     df = pd.read_csv(Path(OUTPUT_PATH) / "fieldwise_result_per_class.csv")
     assert np.isclose(df["f1-score"].sum(), 12.6862, rtol=1e-4)

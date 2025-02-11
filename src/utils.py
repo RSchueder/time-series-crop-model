@@ -1,5 +1,5 @@
 import logging
-from typing import Tuple, Union
+from typing import Any, Tuple, Union
 
 import numpy as np
 from shapely.geometry import Polygon
@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 Bounds = Tuple[float, float, float, float]
 
 
-def map_val_to_int(p):
+def map_val_to_int(p: Any):
     try:
         return int(p)
     except (ValueError, TypeError):

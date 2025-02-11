@@ -6,12 +6,12 @@ import pandas as pd
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, f1_score, precision_recall_fscore_support
 
-from src.common.utils import map_val_to_int
+from src.utils import map_val_to_int
 from src.constants import LABELS_INDEX
 from src.render import df_to_png
 
 
-def calculate_crop_performance(
+def calculate_statistics_per_pixel(
     predictions: np.ndarray,
     confidence: np.ndarray,
     rasterized_labels: np.ndarray,
@@ -51,8 +51,11 @@ def calculate_crop_performance(
         "recall": recall,
     }
     metrics_df = pd.DataFrame(metrics_df)
-    metrics_df = metrics_df.sort_values("f1-score", ascending=False)
+    metrics_df = metrics_df.sort_values("f1-score")
     metrics_df.to_csv(output_path / f"result_per_class{file_suffix}.csv")
+    df_to_png(
+        metrics_df, output_path / output_path / f"result_per_class{file_suffix}.png"
+    )
 
     cf = confusion_matrix(
         rasterized_labels.flatten(),

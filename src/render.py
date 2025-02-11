@@ -1,8 +1,10 @@
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def df_to_png(df, output_path, figsize=(10, 6)):
+def df_to_png(df: pd.DataFrame, output_path: Path, figsize=(10, 6)):
     """
     Save a pandas DataFrame as a PNG image.
 
