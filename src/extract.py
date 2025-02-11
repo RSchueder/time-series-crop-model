@@ -13,7 +13,7 @@ from src.constants import (
 )
 
 
-def extract_labels_and_indices(src, labels: gpd.GeoDataFrame):
+def extract_labels_and_indices(src: rasterio.DatasetReader, labels: gpd.GeoDataFrame):
     shapes = [
         (labels["geometry"].loc[idx], labels["label_index"].loc[idx])
         for idx in labels.index
@@ -36,6 +36,19 @@ def extract_labels_and_indices(src, labels: gpd.GeoDataFrame):
 # this multiprocessing routine to extract values over fields
 #  takes longer than 5 minutes...
 
+def extract_field(args: Tuple[str, Polygon]):
+    '''
+    Used to extract values within a polygon from a raster in multiprocessing
+    '''
+    raster_path, geometry = args
+    with rasterio.open(raster_path) as src:
+        chunk, transform = mask(src, [geometry], crop=True)
+        modal_prediction = mode(chunk[CROP_TYPE_PREDICTION_INDEX_BAND - 1, :, :])
+        mean_confidence = np.mean(chunk[CROP_TYPE_PREDICTION_CONFIDENCE_BAND, :, :])
+
+    return modal_prediction, mean_confidence
+
+
 cpu_count = os.cpu_count()
 
 modes = list()
@@ -49,16 +62,3 @@ with ProcessPoolExecutor(max_workers=cpu_count) as executor:
         modes.append(mode)
         confidence.append(conf)
 """
-
-
-def extract_field(args: Tuple[str, Polygon]):
-    """
-    Used to extract values within a polygon from a raster in multiprocessing
-    """
-    raster_path, geometry = args
-    with rasterio.open(raster_path) as src:
-        chunk, transform = mask(src, [geometry], crop=True)
-        modal_prediction = mode(chunk[CROP_TYPE_PREDICTION_INDEX_BAND - 1, :, :])
-        mean_confidence = np.mean(chunk[CROP_TYPE_PREDICTION_CONFIDENCE_BAND, :, :])
-
-    return modal_prediction, mean_confidence

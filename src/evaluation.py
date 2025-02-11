@@ -1,19 +1,12 @@
-import logging
-import os
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
 import rasterio
-from matplotlib.colors import BoundaryNorm, ListedColormap
-from rasterio import features
 from rasterio.vrt import WarpedVRT
 from rasterio.warp import Resampling
-from shapely.geometry import box
-from tqdm import tqdm
 
-from src.common.utils import get_utm_zone_epsg, log
+from src.utils import get_utm_zone_epsg, log
 from src.constants import (
     CROP_TYPE_PREDICTION_CONFIDENCE_BAND,
     CROP_TYPE_PREDICTION_INDEX_BAND,
@@ -22,7 +15,8 @@ from src.constants import (
     TWO_WAY_LABELS_DICT,
 )
 from src.extract import extract_labels_and_indices
-from src.metrics import calculate_crop_performance, calculate_statistics_per_field
+from src.metrics import calculate_statistics_per_field, calculate_statistics_per_pixel
+from src.render import df_to_png
 
 
 def join_prediction_with_labels(
@@ -79,6 +73,7 @@ def evaluate(
     output_path: Path,
     pred_index_band=CROP_TYPE_PREDICTION_INDEX_BAND,
     confidence_index_band=CROP_TYPE_PREDICTION_CONFIDENCE_BAND,
+    bottom_n: int = 10,
     in_utm=False,
 ):
     """
@@ -90,6 +85,7 @@ def evaluate(
         output_path (Path): Directory where output files will be saved
         pred_index_band (int, optional): Band index for predictions in the raster file
         confidence_index_band (int, optional): Band index for confidence scores in the raster file
+        bottom_n (int, optional): Determine worse bottom_n performing crop type
         in_utm (bool, optional): Whether to perform analysis in UTM coordinates. Defaults to False.
             Note: Currently only supports data within a single UTM zone.
 
@@ -174,12 +170,24 @@ def evaluate(
     )
     main_result_df.to_csv(output_path / f"main_df{file_suffix}.csv")
 
-    # misclassifications on field basis
-    log.info("Determining misclasifications...")
-    calculate_statistics_per_field(main_result_df, output_path, file_suffix)
-
-    # performance on crop basis
-    log.info("Determining performance per crop...")
-    calculate_crop_performance(
+    log.info("Determining performance per pixel...")
+    _ = calculate_statistics_per_pixel(
         predictions, confidence, rasterized_labels, output_path, file_suffix
+    )
+
+    log.info("Determining performance per field...")
+    field_metrics_df = calculate_statistics_per_field(
+        main_result_df, output_path, file_suffix
+    )
+
+    field_metrics_df = field_metrics_df[
+        ["label", "field_count", "f1-score", "precision", "recall"]
+    ]
+    recommended_crop_types = field_metrics_df.iloc[:bottom_n]
+
+    recommended_crop_types.to_csv(
+        output_path / f"worse_{bottom_n}_crops{file_suffix}.csv"
+    )
+    df_to_png(
+        recommended_crop_types, output_path / f"worse_{bottom_n}_crops{file_suffix}.png"
     )

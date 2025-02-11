@@ -6,17 +6,18 @@ import pandas as pd
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, f1_score, precision_recall_fscore_support
 
-from src.common.utils import map_val_to_int
+from src.utils import map_val_to_int
 from src.constants import LABELS_INDEX
+from src.render import df_to_png
 
 
-def calculate_crop_performance(
+def calculate_statistics_per_pixel(
     predictions: np.ndarray,
     confidence: np.ndarray,
     rasterized_labels: np.ndarray,
     output_path: Path,
     file_suffix: str,
-):
+) -> pd.DataFrame:
     confidence_per_class = [
         np.mean(confidence[predictions == idx]) for idx in range(len(LABELS_INDEX))
     ]
@@ -35,7 +36,7 @@ def calculate_crop_performance(
         zero_division=np.nan,
     )
 
-    df = {
+    metrics_df = {
         "class": LABELS_INDEX,
         "prediction_count": [
             np.sum(predictions.flatten() == idx) for idx in range(len(LABELS_INDEX))
@@ -49,9 +50,12 @@ def calculate_crop_performance(
         "precision": precision,
         "recall": recall,
     }
-    df = pd.DataFrame(df)
-    df = df.sort_values("f1-score", ascending=False)
-    df.to_csv(output_path / f"result_per_class{file_suffix}.csv")
+    metrics_df = pd.DataFrame(metrics_df)
+    metrics_df = metrics_df.sort_values("f1-score")
+    metrics_df.to_csv(output_path / f"result_per_class{file_suffix}.csv")
+    df_to_png(
+        metrics_df, output_path / output_path / f"result_per_class{file_suffix}.png"
+    )
 
     cf = confusion_matrix(
         rasterized_labels.flatten(),
@@ -75,10 +79,12 @@ def calculate_crop_performance(
     plt.tight_layout()
     plt.savefig(output_path / f"pixelwise_confusion_matrix{file_suffix}.png")
 
+    return metrics_df
+
 
 def calculate_statistics_per_field(
     main_result_df: pd.DataFrame, output_path: Path, file_suffix: str
-):
+) -> pd.DataFrame:
     main_result_df[
         ~(main_result_df["label_index"] == main_result_df["label_value"])
     ].to_csv(output_path / f"invalid_fields{file_suffix}.csv")
@@ -192,12 +198,25 @@ def calculate_statistics_per_field(
     )
 
     metrics_df = pd.DataFrame(
-        {"precision": precision, "recall": recall, "f1-score": f1}
+        {
+            "precision": precision,
+            "recall": recall,
+            "f1-score": f1,
+        }
     )
+
+    average_crop_confidence = (
+        main_result_df[["confidence", "label_index"]].groupby("label_index").mean()
+    )
+
     metrics_df.index.name = "label_index"
     metrics_df = field_count_by_label_crop.join(metrics_df)
+    metrics_df = metrics_df.join(average_crop_confidence)
 
     metrics_df["label_index"] = metrics_df.index
     metrics_df["label"] = metrics_df["label_index"].apply(lambda x: LABELS_INDEX[x])
-
+    metrics_df = metrics_df.sort_values("f1-score")
     metrics_df.to_csv(output_path / f"fieldwise_result_per_class{file_suffix}.csv")
+    df_to_png(metrics_df, output_path / f"fieldwise_result_per_class{file_suffix}.png")
+
+    return metrics_df
