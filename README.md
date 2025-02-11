@@ -22,7 +22,7 @@ docker-compose build devcontainer
 docker-compose up -d devcontainer
 ```
 
-Then use `Devcontainers: Attach to Running Container` command and attach to the `devcontainer-${USER}` container running on your machine. For those that prefer a jupyter lab notebook environment, the container hosts on at `http://0.0.0.0:8888/lab/workspaces/`
+Then use `Devcontainers: Attach to Running Container` command and attach to the `devcontainer-${USER}` container running on your machine. For those that prefer a jupyter lab notebook environment, the container hosts one at `http://0.0.0.0:8888/lab/workspaces/`
 
 ## Workflow Orchestration
 
