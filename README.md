@@ -59,7 +59,7 @@ The cross-class confusion matrix on a field basis normalized by the predictions 
 The cross-class confusion matrix on a pixel basis by the true labels is as follows is as follows
 ![crop type confusion matrix by pixel](output/pixelwise_confusion_matrix.png)
 
-The overal pixel-level performance per crop type is as follows:
+The overal pixel-level performance per crop type is as follows (I think there might be a bug for Grassland Cultivated):
 ![crop type confusion matrix by pixel](output/result_per_class.png)
 
 The overal field-level performance per crop type is as follows:
@@ -68,13 +68,13 @@ The overal field-level performance per crop type is as follows:
 The worst 10 crops on the basis of field-level f1 score are as follows:
 ![crop type confusion matrix by pixel](output/worse_10_crops.png)
 
+# Discussion and Future Work
 In the context of an active learning scenario, I would recommend incorporating more examples of crop classes for which labels were present in the evaluation set but the model made no observations for. This should be prioritized based on either the prevalence of the crops within the area of application, or based on customer priority. For example, out of the 10 crops with the lowest f1-score, 6 had an f-score of exactly 0, but collectively fields with these crop types represent less than 1% of all fields in the evaluation set (on a count basis, not on area).
 
-
-# Discussion and Future Work
 Active learning typically involves a human in the loop. We have identified the crops that the model struggles with on an evaluation set, and we would need to identify examples of those types crops to label that come from outside the evaluation set. Once we have these examples, we would have a human label them, incorporate them in the training set, and re-run this evaluation. Ideally we would not see any crops which were present in the evaluation set but for which the model made no predictions. However, this is dependent on the goal, since we might not care much about crop types that have very low representation across the area of interest. Ultimately the objective of this model must be identified in order for comprehensive recommendations on future actions to be properly formulated.
 
 # Notes
-* We have commited data at `output/` in order to show work, but normally this data would not be stored in a repository.
-* Runtime for script is on the order of ~78 seconds
-* One test exits that can be run using `pytest -k test_cli -sv`
+* Data was commited to `output/` in order to show work, but normally this data would not be stored in a repository.
+* Runtime for script is on the order of ~80 seconds
+* One test exists that can be run using `pytest -k test_cli -sv`
+* More time should be spent to QA the results
