@@ -13,7 +13,9 @@ from src.constants import (
 )
 
 
-def extract_labels_and_indices(src: rasterio.DatasetReader, labels: gpd.GeoDataFrame):
+def extract_labels_and_field_indices(
+    src: rasterio.DatasetReader, labels: gpd.GeoDataFrame
+):
     shapes = [
         (labels["geometry"].loc[idx], labels["label_index"].loc[idx])
         for idx in labels.index
