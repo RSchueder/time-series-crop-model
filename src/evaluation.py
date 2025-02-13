@@ -6,7 +6,6 @@ import rasterio
 from rasterio.vrt import WarpedVRT
 from rasterio.warp import Resampling
 
-from src.utils import get_utm_zone_epsg, log
 from src.constants import (
     CROP_TYPE_PREDICTION_CONFIDENCE_BAND,
     CROP_TYPE_PREDICTION_INDEX_BAND,
@@ -14,12 +13,13 @@ from src.constants import (
     MISSING_VALUE,
     TWO_WAY_LABELS_DICT,
 )
-from src.extract import extract_labels_and_indices
+from src.extract import extract_labels_and_field_indices
 from src.metrics import calculate_statistics_per_field, calculate_statistics_per_pixel
 from src.render import df_to_png
+from src.utils import get_utm_zone_epsg, log
 
 
-def join_prediction_with_labels(
+def join_predictions_with_labels(
     prediction_path: Path,
     valid_labels: gpd.GeoDataFrame,
     pred_index_band: int = CROP_TYPE_PREDICTION_INDEX_BAND,
@@ -54,14 +54,14 @@ def join_prediction_with_labels(
                 predictions = vrt.read(pred_index_band)
                 confidence = vrt.read(confidence_index_band)
                 rasterized_labels, rasterized_field_indices = (
-                    extract_labels_and_indices(vrt, valid_labels_utm)
+                    extract_labels_and_field_indices(vrt, valid_labels_utm)
                 )
     else:
         with rasterio.open(prediction_path) as src:
             predictions = src.read(pred_index_band)
             confidence = src.read(confidence_index_band)
-            rasterized_labels, rasterized_field_indices = extract_labels_and_indices(
-                src, valid_labels
+            rasterized_labels, rasterized_field_indices = (
+                extract_labels_and_field_indices(src, valid_labels)
             )
 
     return predictions, confidence, rasterized_labels, rasterized_field_indices
@@ -129,7 +129,7 @@ def evaluate(
 
     log.info("Extracting model predictions...")
     predictions, confidence, rasterized_labels, rasterized_field_indices = (
-        join_prediction_with_labels(
+        join_predictions_with_labels(
             prediction_path=prediction_path,
             valid_labels=valid_labels,
             pred_index_band=pred_index_band,

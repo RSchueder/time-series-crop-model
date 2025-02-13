@@ -1,6 +1,5 @@
 import datetime
 from pathlib import Path
-from typing import Optional
 
 import click
 
@@ -61,7 +60,7 @@ def cli():
 )
 @click.option(
     "--prediction-band",
-    "-pb",  # Renamed for clarity
+    "-pb",
     type=int,
     default=CROP_TYPE_PREDICTION_INDEX_BAND,
     callback=validate_band,
@@ -70,7 +69,7 @@ def cli():
 )
 @click.option(
     "--confidence-band",
-    "-cb",  # Renamed for clarity
+    "-cb",
     type=int,
     default=CROP_TYPE_PREDICTION_CONFIDENCE_BAND,
     callback=validate_band,
@@ -109,7 +108,6 @@ def evaluate_performance(
     start_time = datetime.datetime.now()
     log.info("Starting evaluation...")
 
-    # Create output directory if it doesn't exist
     output_path.mkdir(parents=True, exist_ok=True)
 
     evaluate(

@@ -5,3 +5,4 @@ python src/cli.py evaluate \
 -pb 3 \
 -cb 4 \
 -n 10 \
+-u
